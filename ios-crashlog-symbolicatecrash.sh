@@ -28,5 +28,13 @@ echo "-----------------------------------"
 echo "UUID's must match ${CRASH_UUID} ${APP_UUID} ${DYSYM_UUID}"
 echo "-----------------------------------"
 
-mdfind "com_apple_xcode_dsym_uuids = *"
+mdimport `pwd`
+DYSYM_SPOTLIGHT_LOCATION=`mdfind "com_apple_xcode_dsym_uuids = \"${DYSYM_UUID}\""`
+echo "$DYSYM_SPOTLIGHT_LOCATION"
+
+if [ -z "$DYSYM_SPOTLIGHT_LOCATION" ]; then
+    echo "DSYM with UUID \"${DYSYM_UUID}\" not found in spotlight, symbolication will fail"
+    exit 1
+fi
+
 "${SYMBOLICATE_PATH}" "${CRASH}"
